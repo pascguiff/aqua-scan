@@ -1,0 +1,481 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="robots" content="noindex, nofollow, noarchive, nosnippet">
+<meta name="googlebot" content="noindex, nofollow, noarchive">
+<title>Aqua-Scan express · Open Lande</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Baskervville:wght@400;600&family=Hind:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+/* ===========================================
+   THÈME « Profondeur » — repris de aqua-scan-site.html
+   =========================================== */
+:root{
+  --bg:#F6F0E7; --bg-2:#FBF8F3;
+  --accent:#E0604F; --accent-2:#2F7FA0; --ink:#ffffff;
+  --text:#2A2A2A; --muted:#6A6560;
+  --line:rgba(0,0,0,.10);
+  --card:#ffffff; --card-line:rgba(0,0,0,.08);
+  --red:#C8442F; --amber:#C98A1C; --green:#3C8D6B;
+  --font-display:'Baskervville',Georgia,serif;
+  --font-body:'Hind',Arial,sans-serif;
+  --ease:cubic-bezier(.16,1,.3,1);
+}
+*{margin:0;padding:0;box-sizing:border-box}
+html{scroll-behavior:smooth}
+body{
+  background:radial-gradient(120% 120% at 50% 0%,var(--bg-2),var(--bg) 60%);
+  color:var(--text);font-family:var(--font-body);line-height:1.5;
+  min-height:100vh;padding:clamp(1rem,4vw,3rem);
+}
+.wrap{max-width:920px;margin:0 auto}
+.eyebrow{color:var(--accent);font-weight:600;letter-spacing:.18em;text-transform:uppercase;font-size:.72rem;margin-bottom:.6rem}
+h1{font-family:var(--font-display);font-size:clamp(1.8rem,5vw,3rem);line-height:1.05;margin-bottom:.5rem}
+h2{font-family:var(--font-display);font-size:clamp(1.3rem,3.4vw,2rem);margin:0 0 .4rem}
+.lead{color:var(--muted);font-size:clamp(.95rem,1.6vw,1.15rem);max-width:60ch}
+.banner{
+  margin:1.4rem 0;padding:.8rem 1rem;border:1px solid var(--card-line);
+  border-radius:12px;background:var(--card);font-size:.85rem;color:var(--muted)
+}
+.banner b{color:var(--text)}
+/* form */
+.axis{margin:1.6rem 0 0}
+.axis-h{display:flex;align-items:baseline;gap:.6rem;margin:1.4rem 0 .6rem;border-bottom:1px solid var(--line);padding-bottom:.4rem}
+.axis-h .n{color:var(--accent);font-weight:700;font-size:.8rem;letter-spacing:.1em;text-transform:uppercase}
+.q{background:var(--card);border:1px solid var(--card-line);border-radius:14px;padding:1rem 1.1rem;margin:.7rem 0}
+.q .lbl{font-weight:600;margin-bottom:.2rem}
+.q .help{color:var(--muted);font-size:.8rem;margin-bottom:.6rem}
+.opts{display:grid;gap:.45rem}
+.opt{display:flex;gap:.6rem;align-items:flex-start;padding:.55rem .7rem;border:1px solid var(--line);border-radius:10px;cursor:pointer;transition:.15s var(--ease);font-size:.9rem}
+.opt:hover{border-color:var(--accent-2)}
+.opt input{accent-color:var(--accent);margin-top:.18rem}
+.opt.sel{border-color:var(--accent);background:rgba(224,96,79,.08)}
+.field{display:grid;gap:.35rem;margin:.7rem 0}
+.field label{font-weight:600;font-size:.9rem}
+.field .help{color:var(--muted);font-size:.78rem}
+select,input[type=text],input[type=number]{
+  background:#fff;border:1px solid var(--card-line);color:var(--text);
+  border-radius:10px;padding:.6rem .7rem;font-family:inherit;font-size:.92rem;width:100%
+}
+.row{display:grid;grid-template-columns:1fr 1fr;gap:.8rem}
+@media(max-width:560px){.row{grid-template-columns:1fr}}
+.cta{
+  display:inline-flex;align-items:center;gap:.5rem;background:var(--accent);color:var(--ink);
+  font-family:var(--font-body);font-weight:700;border:none;border-radius:12px;
+  padding:.9rem 1.5rem;font-size:1rem;cursor:pointer;transition:.15s var(--ease)
+}
+.cta:hover{transform:translateY(-2px);box-shadow:0 10px 30px rgba(224,96,79,.25)}
+.cta.ghost{background:transparent;color:var(--accent);border:1px solid var(--accent)}
+.bar{position:sticky;bottom:0;padding:1rem 0;background:linear-gradient(to top,var(--bg),transparent);text-align:center;margin-top:1rem}
+.err{color:var(--amber);font-size:.85rem;margin-top:.5rem;min-height:1.2em}
+/* results */
+#results{display:none;margin-top:2rem}
+.score-hero{display:flex;gap:clamp(1rem,4vw,2.5rem);align-items:center;flex-wrap:wrap;background:var(--card);border:1px solid var(--card-line);border-radius:18px;padding:clamp(1.2rem,3vw,2rem)}
+.gauge{flex:0 0 auto}
+.niveau{flex:1;min-width:220px}
+.niveau .big{font-family:var(--font-display);font-size:clamp(1.6rem,4vw,2.4rem);line-height:1.05}
+.niveau .pct{color:var(--accent);font-weight:700}
+.badge{display:inline-block;padding:.25rem .7rem;border-radius:999px;font-size:.78rem;font-weight:700;margin-top:.5rem}
+.radar-wrap{display:flex;justify-content:center;margin:1.6rem 0}
+.alerts{display:grid;gap:.6rem;margin:.6rem 0}
+.alert{display:flex;gap:.7rem;align-items:flex-start;border:1px solid rgba(200,68,47,.35);background:rgba(200,68,47,.06);border-radius:12px;padding:.8rem 1rem}
+.alert .dot{color:var(--red);font-size:1.1rem;line-height:1}
+.cards{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:.8rem;margin:.6rem 0}
+.mini{background:var(--card);border:1px solid var(--card-line);border-radius:14px;padding:1rem}
+.mini .k{color:var(--muted);font-size:.78rem;text-transform:uppercase;letter-spacing:.08em}
+.mini .v{font-family:var(--font-display);font-size:1.5rem;margin:.2rem 0;color:var(--accent)}
+.mini .sub{color:var(--muted);font-size:.78rem}
+.section-t{margin:2rem 0 .4rem;font-family:var(--font-display);font-size:1.15rem}
+ul.clean{list-style:none;display:grid;gap:.5rem;margin:.4rem 0}
+ul.clean li{padding-left:1.4rem;position:relative;color:var(--text)}
+ul.clean li::before{content:"→";position:absolute;left:0;color:var(--accent)}
+.offer{margin-top:2rem;border:1px solid var(--accent);border-radius:18px;padding:clamp(1.2rem,3vw,2rem);background:#fff}
+.offer .price{font-family:var(--font-display);font-size:1.6rem;color:var(--accent);margin:.3rem 0}
+.foot{margin-top:2.5rem;color:var(--muted);font-size:.78rem;border-top:1px solid var(--line);padding-top:1rem}
+.hidden{display:none!important}
+</style>
+</head>
+<body>
+<div class="wrap">
+
+  <!-- ============ INTRO + FORMULAIRE ============ -->
+  <section id="form-section">
+    <img src="logo-open-lande.png" alt="Open Lande" style="height:64px;margin-bottom:1rem"><div class="eyebrow">Open Lande · Aqua-Scan express</div>
+    <h1>Aqua-Scan — où en est votre site sur l'eau ?</h1>
+    <p class="lead">2 minutes, 12 questions. Vous obtenez tout de suite un score de maturité sur 7 axes, vos alertes prioritaires et une estimation du coût réel de votre eau.</p>
+
+    <div class="banner">
+      <b>Votre résultat s'affiche tout de suite, sur cet écran.</b> Estimation indicative à partir de vos déclarations ; rien n'est envoyé tant que vous ne demandez pas votre Aqua-Scan complet.
+    </div>
+
+    <!-- Identité -->
+    <div class="axis-h"><span class="n">Votre site</span></div>
+    <div class="q">
+      <div class="field">
+        <label>Secteur d'activité du site</label>
+        <select id="secteur">
+          <option value="">— Sélectionner —</option>
+          <option value="ind">Agroalimentaire (IAA)</option>
+          <option value="ind">Boissons (brasserie, embouteillage)</option>
+          <option value="ind">Chimie / pharma / cosmétique</option>
+          <option value="ind">Mécanique / traitement de surface</option>
+          <option value="ind">Textile / cuir / teinture</option>
+          <option value="ind">Papeterie / cartonnerie</option>
+          <option value="ind">Énergie / utilities</option>
+          <option value="ind">Autre industrie de procédé</option>
+          <option value="ter">Tertiaire / services</option>
+          <option value="ind">Agriculture / agro-industrie amont</option>
+        </select>
+      </div>
+      <div class="row">
+        <div class="field">
+          <label>Taille</label>
+          <select id="taille">
+            <option value="">—</option>
+            <option value="tpe">TPE/PE (&lt; 50 sal)</option>
+            <option value="pme">PME (50-249 sal)</option>
+            <option value="eti">ETI (250-1000 sal)</option>
+            <option value="ge">Grande entreprise</option>
+          </select>
+        </div>
+        <div class="field">
+          <label>Commune du site <span class="help">(facultatif)</span></label>
+          <input type="text" id="commune" placeholder="ex. Nantes">
+        </div>
+      </div>
+    </div>
+
+    <div id="questions"></div>
+
+    <!-- Module coût -->
+    <div class="axis-h"><span class="n">Bonus — votre coût réel de l'eau</span></div>
+    <div class="q">
+      <div class="help" style="margin-bottom:.6rem">Facultatif, mais c'est ce qui rend le résultat concret. Renseignez ce que vous connaissez.</div>
+      <div class="row">
+        <div class="field">
+          <label>Facture d'eau AEP annuelle (€ HT)</label>
+          <input type="number" id="factureAEP" min="0" placeholder="ex. 45000">
+        </div>
+        <div class="field">
+          <label>Volume d'eau annuel total (m³)</label>
+          <input type="number" id="volume" min="0" placeholder="ex. 22000">
+        </div>
+      </div>
+      <div class="row">
+        <div class="field">
+          <label>Production annuelle</label>
+          <input type="number" id="prod" min="0" placeholder="ex. 12000">
+        </div>
+        <div class="field">
+          <label>Unité de production</label>
+          <input type="text" id="prodUnit" placeholder="tonnes, hl, unités…">
+        </div>
+      </div>
+    </div>
+
+    <div class="bar">
+      <button class="cta" id="go">Voir mon résultat →</button>
+      <div class="err" id="err"></div>
+    </div>
+  </section>
+
+  <!-- ============ RÉSULTATS ============ -->
+  <section id="results">
+    <div class="eyebrow">Votre résultat Aqua-Scan</div>
+    <div class="score-hero">
+      <div class="gauge" id="gauge"></div>
+      <div class="niveau">
+        <div class="big" id="niveauNom">—</div>
+        <div>Score de maturité eau : <span class="pct" id="scorePct">—</span></div>
+        <span class="badge" id="niveauBadge"></span>
+        <p class="lead" id="niveauTxt" style="margin-top:.6rem;font-size:.92rem"></p>
+      </div>
+    </div>
+
+    <div class="radar-wrap" id="radar"></div>
+
+    <div class="section-t">Vos alertes prioritaires</div>
+    <div class="alerts" id="alerts"></div>
+
+    <div class="section-t">Estimation de votre coût réel de l'eau</div>
+    <div class="cards" id="costCards"></div>
+    <p class="lead" id="costNote" style="font-size:.8rem"></p>
+
+    <div class="section-t">3 pistes d'action rapides (&lt; 30 jours)</div>
+    <ul class="clean" id="quickwins"></ul>
+
+    <div class="offer">
+      <div class="eyebrow">L'étape d'après, gratuite</div>
+      <h2>Votre Aqua-Scan complet, avec les données publiques de votre site</h2>
+      <p class="lead">Nous croisons vos réponses avec les bases de l'État sur <b>votre site</b> : restrictions sécheresse en vigueur, prélèvements d'eau déclarés, installation classée, risques de la commune. <b>Vous recevez votre rapport sous 48 heures.</b></p>
+      <a class="cta" href="#" id="fullLink" target="_blank" rel="noopener">Recevoir mon Aqua-Scan complet (1 minute) →</a>
+      <button class="cta ghost" id="restart" style="margin-left:.6rem">Recommencer</button>
+      <p class="lead" style="font-size:.85rem;margin-top:1rem">Ensuite, si vous le souhaitez : un diagnostic eau de votre site avec Pascale Guiffant (Open Lande). <b>Programme pilote ouvert à 5 sites industriels.</b> pascale@openlande.co</p>
+    </div>
+
+    <div class="foot">
+      Estimations basées sur vos déclarations et des repères publics (prix de l'eau SISPEA ≈ 2 €/m³ ; coût complet typiquement 2 à 4× la facture AEP). Ne constitue pas un audit. © 2026 Open Lande. Questionnaire et méthode de calcul protégés : reproduction ou réutilisation interdite sans autorisation écrite.
+    </div>
+  </section>
+
+</div>
+
+<script>
+/* =========================================================
+   AQUA-SCAN — logique de scoring (reprise de la spec v1)
+   Cette logique JS est directement transposable dans le
+   nœud Code de n8n pour la version production.
+   ========================================================= */
+
+// 12 questions condensées depuis Aqua-Scan v1, mapping axe identique.
+// Pour chaque question : index de l'option = score (0 à 3).
+const QUESTIONS = [
+  {id:"q4", axe:"Cartographie",
+   lbl:"Connaissez-vous votre consommation annuelle d'eau totale (m³) du site ?",
+   opts:["Non","Approximativement","Oui, à 10 % près (suivi annuel)","Oui, suivi mensuel par usage / process"]},
+  {id:"q7", axe:"Cartographie",
+   lbl:"Quelle part de votre eau vient du réseau public (AEP) vs d'un captage propre ?",
+   help:"L'eau du réseau public n'apparaît dans aucune base publique. Pour beaucoup de sites, c'est la source dominante et la grande zone d'ombre.",
+   opts:["Je ne sais pas","Je connais l'ordre de grandeur","Réparti et mesuré annuellement","Réparti, mesuré et suivi par source"]},
+
+  {id:"q8", axe:"Conformité",
+   lbl:"Avez-vous un prélèvement direct dans le milieu (forage, rivière, nappe) > 10 000 m³/an ?",
+   help:"Ce seuil déclenche la redevance Agence de l'eau, l'inscription BNPE et les restrictions sécheresse (arrêté du 30 juin 2023).",
+   opts:["Je ne sais pas","Non, pas de prélèvement direct (100 % réseau)","Oui, déclaré à l'Agence de l'eau","Oui, déclaré + suivi mensuel transmis"]},
+  {id:"q10", axe:"Conformité",
+   lbl:"Avez-vous une procédure formalisée en cas de restriction sécheresse ?",
+   opts:["Non","On improvise quand ça arrive","Procédure écrite, jamais testée","Procédure écrite + testée"]},
+
+  {id:"q11", axe:"Rejets",
+   lbl:"Où vont vos eaux usées industrielles ?",
+   help:"Réseau collectif = convention de raccordement exigée ; milieu naturel = arrêté exigé. Dans les deux cas, redevance pollution.",
+   opts:["Je ne sais pas","Réseau / milieu, sans convention ni autorisation","Réseau avec convention OU milieu avec arrêté","Destination maîtrisée, convention/arrêté à jour"]},
+
+  {id:"q14", axe:"Risques",
+   lbl:"Avez-vous été impacté par une restriction sécheresse ces 3 dernières années ?",
+   opts:["Oui, arrêt ou ralentissement de production","Oui, mais sans impact production","Non","Non + exposition au stress hydrique déjà cartographiée"]},
+  {id:"q15", axe:"Risques",
+   lbl:"Vos clients vous demandent-ils des données sur votre empreinte eau (CSRD, donneurs d'ordre, AO) ?",
+   opts:["Pas encore, mais on s'y attend","Demandes ponctuelles, pas de structure","Demandes régulières, on remonte des chiffres","Reporting structuré (CDP Water, ESRS E3, VSME)"]},
+
+  {id:"q17", axe:"Performance",
+   lbl:"Pratiquez-vous du recyclage / réutilisation d'eau sur site ?",
+   opts:["Non","On y réfléchit","Oui, ponctuellement (1-2 boucles)","Oui, structurellement (> 20 % réutilisée)"]},
+  {id:"q18", axe:"Performance",
+   lbl:"Avez-vous chiffré le coût complet de l'eau (achat + traitement + énergie + rejets + redevances) ?",
+   help:"Le prix AEP seul ≈ 2 €/m³. Le coût complet est typiquement 2 à 4× supérieur. La plupart des sites ne pilotent que la facture AEP.",
+   opts:["Non","On connaît la facture AEP","Coût complet estimé annuellement","Coût complet suivi mensuellement, par m³ produit"]},
+
+  {id:"q20", axe:"Gouvernance",
+   lbl:"Qui pilote la gestion de l'eau dans l'entreprise ?",
+   opts:["Personne en particulier","Technique / production, sans temps dédié","Un référent identifié (QSE, RSE, prod)","Référent + COMEX qui revoit la stratégie eau"]},
+
+  {id:"q22", axe:"Exposition",
+   lbl:"Quel est votre niveau d'exposition à un stress hydrique sur votre bassin ?",
+   opts:["Je ne sais pas","Faible (jamais de restriction historique)","Moyen (restrictions occasionnelles)","Fort (zone ZRE / sécheresse récurrente)"]},
+  {id:"q23", axe:"Exposition",
+   lbl:"Si vous deviez arrêter 1 semaine pour pénurie d'eau, quel serait l'impact business ?",
+   opts:["Critique, perte > 100 k€","Significatif, 25-100 k€","Modéré, < 25 k€","Faible, bascule possible (autre site, stocks)"]},
+];
+
+const AXES = ["Cartographie","Conformité","Rejets","Risques","Performance","Gouvernance","Exposition"];
+
+const NIVEAUX = [
+  {min:0,  max:29,  nom:"Niveau 1 — Aveugle",   col:"var(--red)",   txt:"Vous ne savez pas où vous en êtes : le risque est invisible, donc impossible à piloter."},
+  {min:30, max:54,  nom:"Niveau 2 — Réactive",  col:"var(--amber)", txt:"Vous gérez en pompier, pas en stratège. Les bases ne sont pas encore sécurisées."},
+  {min:55, max:79,  nom:"Niveau 3 — Structurée",col:"var(--accent-2)",txt:"Les fondations sont là. L'enjeu devient la performance et la résilience."},
+  {min:80, max:100, nom:"Niveau 4 — Mature",    col:"var(--green)", txt:"Vous êtes en avance. L'enjeu : valoriser et peser sur votre filière."},
+];
+
+const state = {};
+
+// ---------- Rendu du formulaire ----------
+function renderForm(){
+  const c = document.getElementById("questions");
+  let cur = "";
+  QUESTIONS.forEach((q,qi)=>{
+    if(q.axe!==cur){ cur=q.axe; c.insertAdjacentHTML("beforeend",
+      `<div class="axis-h"><span class="n">${q.axe}</span></div>`); }
+    const opts = q.opts.map((o,oi)=>
+      `<label class="opt" data-q="${q.id}" data-v="${oi}">
+         <input type="radio" name="${q.id}" value="${oi}"><span>${o}</span></label>`).join("");
+    c.insertAdjacentHTML("beforeend",
+      `<div class="q">
+         <div class="lbl">${qi+1}. ${q.lbl}</div>
+         ${q.help?`<div class="help">${q.help}</div>`:""}
+         <div class="opts">${opts}</div>
+       </div>`);
+  });
+  c.querySelectorAll(".opt").forEach(el=>el.addEventListener("click",()=>{
+    const id=el.dataset.q;
+    c.querySelectorAll(`.opt[data-q="${id}"]`).forEach(x=>x.classList.remove("sel"));
+    el.classList.add("sel"); el.querySelector("input").checked=true;
+    state[id]=parseInt(el.dataset.v,10);
+  }));
+}
+
+// ---------- Scoring ----------
+function computeScores(){
+  const byAxe={}; AXES.forEach(a=>byAxe[a]={pts:0,max:0});
+  QUESTIONS.forEach(q=>{
+    const v=state[q.id]; if(v===undefined) return;
+    byAxe[q.axe].pts+=v; byAxe[q.axe].max+=3;
+  });
+  const axePct={};
+  AXES.forEach(a=>{ axePct[a]= byAxe[a].max? Math.round(100*byAxe[a].pts/byAxe[a].max):0; });
+  const global=Math.round(AXES.reduce((s,a)=>s+axePct[a],0)/AXES.length);
+  return {axePct,global};
+}
+
+function niveauFor(p){ return NIVEAUX.find(n=>p>=n.min&&p<=n.max); }
+
+// ---------- Alertes rouges (sous-ensemble des règles v1) ----------
+function redAlerts(){
+  const a=[]; const s=state; const sect=document.getElementById("secteur").value;
+  const ind = sect!=="ter";
+  if(s.q7===0) a.push("Angle mort total : vous ne connaissez ni vos volumes réseau, ni leur part — pilotage à l'aveugle.");
+  if(s.q8===0 && ind) a.push("Vous êtes potentiellement concerné par les seuils ICPE prélèvement sans le savoir.");
+  if(s.q11<=1) a.push("Destination de vos eaux usées non maîtrisée — risque réglementaire direct (convention / arrêté).");
+  if(s.q14===0) a.push("Vulnérabilité critique : un arrêt de production lié à la sécheresse a déjà eu lieu. Un plan de continuité hydrique est urgent.");
+  if(s.q22===3 && s.q17<=1) a.push("Zone tendue + pas de recyclage = exposition stratégique majeure.");
+  if(s.q18===0 && ind) a.push("Vous ne pilotez pas le coût complet de l'eau — angle mort économique direct.");
+  if(s.q10<=1 && s.q22>=2) a.push("Bassin sous tension et aucune procédure sécheresse formalisée — vous subirez la prochaine restriction.");
+  return a.slice(0,3);
+}
+
+// ---------- Chiffrage coût réel ----------
+function costEstimate(){
+  let facture=parseFloat(document.getElementById("factureAEP").value)||0;
+  const volume=parseFloat(document.getElementById("volume").value)||0;
+  const prod=parseFloat(document.getElementById("prod").value)||0;
+  const unit=(document.getElementById("prodUnit").value||"unité").trim();
+  const PRIX_AEP=2; // €/m³ (repère SISPEA)
+  if(!facture && volume) facture=volume*PRIX_AEP;
+  if(!facture) return null;
+  const completBas=facture*2, completCentral=facture*3, completHaut=facture*4;
+  const gainBas=Math.round(completCentral*0.15), gainHaut=Math.round(completCentral*0.25);
+  let coutM3prod=null;
+  if(prod>0) coutM3prod=completCentral/prod;
+  return {facture,completCentral,completBas,completHaut,gainBas,gainHaut,coutM3prod,unit};
+}
+
+const euro=n=>new Intl.NumberFormat("fr-FR",{maximumFractionDigits:0}).format(Math.round(n))+" €";
+
+// ---------- Jauge SVG ----------
+function gaugeSVG(pct,col){
+  const r=54,c=2*Math.PI*r,off=c*(1-pct/100);
+  return `<svg width="140" height="140" viewBox="0 0 140 140">
+    <circle cx="70" cy="70" r="${r}" fill="none" stroke="rgba(0,0,0,.10)" stroke-width="12"/>
+    <circle cx="70" cy="70" r="${r}" fill="none" stroke="${col}" stroke-width="12"
+      stroke-linecap="round" stroke-dasharray="${c}" stroke-dashoffset="${off}"
+      transform="rotate(-90 70 70)"/>
+    <text x="70" y="64" text-anchor="middle" font-family="var(--font-display)" font-size="30" fill="${col}">${pct}</text>
+    <text x="70" y="86" text-anchor="middle" font-size="11" fill="var(--muted)">/ 100</text>
+  </svg>`;
+}
+
+// ---------- Radar SVG (7 axes) ----------
+function radarSVG(axePct){
+  const cx=230,cy=180,R=125,N=AXES.length;
+  const ang=i=>(-Math.PI/2)+i*2*Math.PI/N;
+  const pt=(i,rad)=>[cx+rad*Math.cos(ang(i)),cy+rad*Math.sin(ang(i))];
+  let grid="";
+  [0.25,0.5,0.75,1].forEach(f=>{
+    const p=AXES.map((_,i)=>pt(i,R*f).join(",")).join(" ");
+    grid+=`<polygon points="${p}" fill="none" stroke="rgba(0,0,0,.10)"/>`;
+  });
+  let spokes="",labels="";
+  AXES.forEach((a,i)=>{
+    const [x,y]=pt(i,R); spokes+=`<line x1="${cx}" y1="${cy}" x2="${x}" y2="${y}" stroke="rgba(0,0,0,.10)"/>`;
+    const [lx,ly]=pt(i,R+22);
+    const anchor=Math.abs(lx-cx)<5?"middle":(lx>cx?"start":"end");
+    labels+=`<text x="${lx}" y="${ly}" text-anchor="${anchor}" font-size="11" fill="var(--muted)">${a}</text>`;
+    labels+=`<text x="${lx}" y="${ly+13}" text-anchor="${anchor}" font-size="11" font-weight="700" fill="var(--accent)">${axePct[a]}%</text>`;
+  });
+  const poly=AXES.map((a,i)=>pt(i,R*axePct[a]/100).join(",")).join(" ");
+  const dots=AXES.map((a,i)=>{const[x,y]=pt(i,R*axePct[a]/100);return `<circle cx="${x}" cy="${y}" r="3.5" fill="var(--accent)"/>`}).join("");
+  return `<svg width="100%" style="max-width:460px" viewBox="0 0 460 370">
+    ${grid}${spokes}
+    <polygon points="${poly}" fill="rgba(224,96,79,.18)" stroke="var(--accent)" stroke-width="2"/>
+    ${dots}${labels}</svg>`;
+}
+
+// ---------- Lancer le résultat ----------
+function showResults(){
+  const {axePct,global}=computeScores();
+  const niv=niveauFor(global);
+  document.getElementById("gauge").innerHTML=gaugeSVG(global,niv.col);
+  document.getElementById("niveauNom").textContent=niv.nom;
+  document.getElementById("scorePct").textContent=global+" %";
+  const badge=document.getElementById("niveauBadge");
+  badge.textContent=niv.nom.split("—")[1].trim();
+  badge.style.background=niv.col; badge.style.color="var(--ink)";
+  document.getElementById("niveauTxt").textContent=niv.txt;
+  document.getElementById("radar").innerHTML=radarSVG(axePct);
+
+  // alertes
+  const al=redAlerts(); const ac=document.getElementById("alerts");
+  ac.innerHTML = al.length? al.map(t=>`<div class="alert"><span class="dot">●</span><span>${t}</span></div>`).join("")
+    : `<div class="mini"><div class="sub">Aucune alerte rouge majeure détectée sur ce mini-scan. Le diagnostic complet vérifie 10 règles supplémentaires (BNPE, VigiEau, ICPE…).</div></div>`;
+
+  // chiffrage
+  const cost=costEstimate(); const cc=document.getElementById("costCards"); const cn=document.getElementById("costNote");
+  if(cost){
+    let cards=`
+      <div class="mini"><div class="k">Coût complet estimé / an</div><div class="v">${euro(cost.completCentral)}</div><div class="sub">fourchette ${euro(cost.completBas)} – ${euro(cost.completHaut)}</div></div>
+      <div class="mini"><div class="k">Manque-à-gagner d'un plan d'économies</div><div class="v">${euro(cost.gainBas)}–${euro(cost.gainHaut)}</div><div class="sub">par an (15-25 % du coût complet)</div></div>`;
+    if(cost.coutM3prod!==null) cards+=`<div class="mini"><div class="k">Coût eau / ${cost.unit} produite</div><div class="v">${new Intl.NumberFormat("fr-FR",{maximumFractionDigits:2}).format(cost.coutM3prod)} €</div><div class="sub">base coût complet estimé</div></div>`;
+    cc.innerHTML=cards;
+    cn.textContent="Estimation à partir de votre facture AEP, extrapolée au coût complet (facteur 2-4× : pompage, chauffage, traitement, rejets, redevances). Le diagnostic complet remplace cette extrapolation par votre coût réel mesuré.";
+  } else {
+    cc.innerHTML=`<div class="mini"><div class="sub">Renseignez votre facture d'eau ou votre volume annuel (module bonus) pour obtenir l'estimation chiffrée de votre coût réel.</div></div>`;
+    cn.textContent="";
+  }
+
+  // quick wins adaptatifs simples
+  const qw=[]; const s=state;
+  if(s.q4<=1) qw.push("Poser un comptage mensuel de la consommation totale — la base de tout pilotage, faisable en quelques jours.");
+  if(s.q7<=1) qw.push("Distinguer eau réseau (AEP) et captage propre, et sous-compter la source dominante — c'est la zone d'ombre n°1.");
+  if(s.q10<=1) qw.push("Rédiger une procédure sécheresse simple (vigilance → alerte → crise) avant le prochain arrêté préfectoral.");
+  if(s.q18<=1) qw.push("Reconstituer le coût complet du m³ (au-delà de la facture AEP) pour révéler le vrai enjeu économique.");
+  if(s.q17<=1) qw.push("Identifier 1 boucle de réutilisation simple (eaux de rinçage, refroidissement) à tester en pilote.");
+  while(qw.length<3) qw.push("Cartographier les usages eau par poste (process / sanitaire / refroidissement / lavage).");
+  document.getElementById("quickwins").innerHTML=qw.slice(0,3).map(t=>`<li>${t}</li>`).join("");
+
+  const p=new URLSearchParams({source:new URLSearchParams(location.search).get("source")||"salon-igo",version:"express-v1"});
+  QUESTIONS.forEach(q=>p.set(q.id,state[q.id]));
+  const sel=document.getElementById("secteur"),tai=document.getElementById("taille");
+  p.set("secteur",sel.options[sel.selectedIndex].text); if(tai.value) p.set("taille",tai.options[tai.selectedIndex].text);
+  if(document.getElementById("commune").value) p.set("commune",document.getElementById("commune").value);
+  document.getElementById("fullLink").href="https://tally.so/r/ODWbW8?"+p.toString();
+  document.getElementById("form-section").classList.add("hidden");
+  document.getElementById("results").style.display="block";
+  window.scrollTo({top:0,behavior:"smooth"});
+}
+
+// ---------- Validation + events ----------
+document.getElementById("go").addEventListener("click",()=>{
+  const missing=QUESTIONS.filter(q=>state[q.id]===undefined);
+  const err=document.getElementById("err");
+  if(!document.getElementById("secteur").value){ err.textContent="Indiquez votre secteur d'activité."; return; }
+  if(missing.length){ err.textContent=`Il reste ${missing.length} question(s) sans réponse.`;
+    document.querySelector(`.opt[data-q="${missing[0].id}"]`).scrollIntoView({behavior:"smooth",block:"center"}); return; }
+  err.textContent=""; showResults();
+});
+document.getElementById("restart").addEventListener("click",()=>{
+  for(const k in state) delete state[k];
+  document.getElementById("results").style.display="none";
+  document.getElementById("form-section").classList.remove("hidden");
+  document.querySelectorAll(".opt.sel").forEach(e=>e.classList.remove("sel"));
+  document.querySelectorAll('input[type=radio]').forEach(e=>e.checked=false);
+  ["secteur","taille","commune","factureAEP","volume","prod","prodUnit"].forEach(id=>document.getElementById(id).value="");
+  window.scrollTo({top:0,behavior:"smooth"});
+});
+
+renderForm();
+</script>
+</body>
+</html>
