@@ -151,9 +151,9 @@ ul.clean li::before{content:"→";position:absolute;left:0;color:var(--accent)}
     <div id="questions"></div>
 
     <!-- Module coût -->
-    <div class="axis-h"><span class="n">Bonus — votre coût réel de l'eau</span></div>
+    <div class="axis-h"><span class="n">Bonus — votre facture d'eau</span></div>
     <div class="q">
-      <div class="help" style="margin-bottom:.6rem">Facultatif, mais c'est ce qui rend le résultat concret. Renseignez ce que vous connaissez.</div>
+      <div class="help" style="margin-bottom:.6rem">Facultatif. Renseignez ce que vous connaissez : rien n'est estimé à votre place.</div>
       <div class="row">
         <div class="field">
           <label>Facture d'eau AEP annuelle (€ HT)</label>
@@ -189,7 +189,7 @@ ul.clean li::before{content:"→";position:absolute;left:0;color:var(--accent)}
       <div class="gauge" id="gauge"></div>
       <div class="niveau">
         <div class="big" id="niveauNom">—</div>
-        <div>Score de maturité eau : <span class="pct" id="scorePct">—</span></div>
+        <div>Score de maturité déclarée : <span class="pct" id="scorePct">—</span></div>
         <span class="badge" id="niveauBadge"></span>
         <p class="lead" id="niveauTxt" style="margin-top:.6rem;font-size:.92rem"></p>
       </div>
@@ -200,7 +200,7 @@ ul.clean li::before{content:"→";position:absolute;left:0;color:var(--accent)}
     <div class="section-t">Vos alertes prioritaires</div>
     <div class="alerts" id="alerts"></div>
 
-    <div class="section-t">Estimation de votre coût réel de l'eau</div>
+    <div class="section-t">Ce que dit votre facture d'eau</div>
     <div class="cards" id="costCards"></div>
     <p class="lead" id="costNote" style="font-size:.8rem"></p>
 
@@ -208,16 +208,16 @@ ul.clean li::before{content:"→";position:absolute;left:0;color:var(--accent)}
     <ul class="clean" id="quickwins"></ul>
 
     <div class="offer">
-      <div class="eyebrow">L'étape d'après, gratuite</div>
-      <h2>Votre Aqua-Scan complet, avec les données publiques de votre site</h2>
-      <p class="lead">Nous croisons vos réponses avec les bases de l'État sur <b>votre site</b> : restrictions sécheresse en vigueur, prélèvements d'eau déclarés, installation classée, risques de la commune. <b>Vous recevez votre rapport sous 48 heures.</b></p>
-      <a class="cta" href="#" id="fullLink" target="_blank" rel="noopener">Recevoir mon Aqua-Scan complet (1 minute) →</a>
+      <div class="eyebrow">La suite</div>
+      <h2>Parlons de votre site, 30 minutes</h2>
+      <p class="lead">Nous regardons ensemble vos réponses, ce que les données publiques disent de <b>votre site</b> (restrictions sécheresse, prélèvements déclarés, installation classée) et ce qu'un diagnostic Aqua-Scan vous apporterait : le vrai prix de votre eau, ce que vous coûterait un été sec, vos leviers par priorité et un plan de réponse aux restrictions.</p>
+      <a class="cta" href="mailto:pascale@openlande.co?subject=Aqua-Scan%20-%20%C3%A9change%20de%2030%20minutes" id="fullLink">Demander un échange de 30 minutes →</a>
       <button class="cta ghost" id="restart" style="margin-left:.6rem">Recommencer</button>
       <p class="lead" style="font-size:.85rem;margin-top:1rem">Ensuite, si vous le souhaitez : un diagnostic eau de votre site avec Pascale Guiffant (Open Lande). <b>Programme pilote ouvert à 5 sites industriels.</b> pascale@openlande.co</p>
     </div>
 
     <div class="foot">
-      Estimations basées sur vos déclarations et des repères publics (prix de l'eau SISPEA ≈ 2 €/m³ ; coût complet typiquement 2 à 4× la facture AEP). Ne constitue pas un audit. © 2026 Open Lande. Questionnaire et méthode de calcul protégés : reproduction ou réutilisation interdite sans autorisation écrite.
+      Résultat indicatif, établi à partir de vos seules déclarations : ce n'est ni un audit ni un avis sur votre conformité. © 2026 Open Lande. Questionnaire et méthode de calcul protégés : reproduction ou réutilisation interdite sans autorisation écrite.
     </div>
   </section>
 
@@ -241,9 +241,9 @@ const QUESTIONS = [
    help:"L'eau du réseau public n'apparaît dans aucune base publique. Pour beaucoup de sites, c'est la source dominante et la grande zone d'ombre.",
    opts:["Je ne sais pas","Je connais l'ordre de grandeur","Réparti et mesuré annuellement","Réparti, mesuré et suivi par source"]},
 
-  {id:"q8", axe:"Conformité",
-   lbl:"Avez-vous un prélèvement direct dans le milieu (forage, rivière, nappe) > 10 000 m³/an ?",
-   help:"Ce seuil déclenche la redevance Agence de l'eau, l'inscription BNPE et les restrictions sécheresse (arrêté du 30 juin 2023).",
+  {id:"q8", axe:"Conformité", na:1,
+   lbl:"Prélevez-vous de l'eau directement dans le milieu (forage, rivière, nappe) ?",
+   help:"Attention : l'arrêté sécheresse du 30 juin 2023 vise les installations classées (autorisation ou enregistrement) dont le prélèvement total dépasse 10 000 m³ par an, eau du réseau comprise.",
    opts:["Je ne sais pas","Non, pas de prélèvement direct (100 % réseau)","Oui, déclaré à l'Agence de l'eau","Oui, déclaré + suivi mensuel transmis"]},
   {id:"q10", axe:"Conformité",
    lbl:"Avez-vous une procédure formalisée en cas de restriction sécheresse ?",
@@ -266,7 +266,7 @@ const QUESTIONS = [
    opts:["Non","On y réfléchit","Oui, ponctuellement (1-2 boucles)","Oui, structurellement (> 20 % réutilisée)"]},
   {id:"q18", axe:"Performance",
    lbl:"Avez-vous chiffré le coût complet de l'eau (achat + traitement + énergie + rejets + redevances) ?",
-   help:"Le prix AEP seul ≈ 2 €/m³. Le coût complet est typiquement 2 à 4× supérieur. La plupart des sites ne pilotent que la facture AEP.",
+   help:"La facture ne montre qu'une partie du coût : l'énergie (pomper, chauffer l'eau), les traitements et la maintenance n'y figurent pas.",
    opts:["Non","On connaît la facture AEP","Coût complet estimé annuellement","Coût complet suivi mensuellement, par m³ produit"]},
 
   {id:"q20", axe:"Gouvernance",
@@ -321,7 +321,7 @@ function renderForm(){
 function computeScores(){
   const byAxe={}; AXES.forEach(a=>byAxe[a]={pts:0,max:0});
   QUESTIONS.forEach(q=>{
-    const v=state[q.id]; if(v===undefined) return;
+    const v=state[q.id]; if(v===undefined) return; if(q.na!==undefined && v===q.na) return;
     byAxe[q.axe].pts+=v; byAxe[q.axe].max+=3;
   });
   const axePct={};
@@ -337,29 +337,25 @@ function redAlerts(){
   const a=[]; const s=state; const sect=document.getElementById("secteur").value;
   const ind = sect!=="ter";
   if(s.q7===0) a.push("Angle mort total : vous ne connaissez ni vos volumes réseau, ni leur part — pilotage à l'aveugle.");
-  if(s.q8===0 && ind) a.push("Vous êtes potentiellement concerné par les seuils ICPE prélèvement sans le savoir.");
-  if(s.q11<=1) a.push("Destination de vos eaux usées non maîtrisée — risque réglementaire direct (convention / arrêté).");
-  if(s.q14===0) a.push("Vulnérabilité critique : un arrêt de production lié à la sécheresse a déjà eu lieu. Un plan de continuité hydrique est urgent.");
-  if(s.q22===3 && s.q17<=1) a.push("Zone tendue + pas de recyclage = exposition stratégique majeure.");
+  if(s.q8===0 && ind) a.push("Vous ne savez pas d'où vient votre eau : impossible de dire si l'arrêté sécheresse du 30 juin 2023 s'applique à votre site.");
+  if(s.q11<=1) a.push("Destination de vos eaux usées non maîtrisée : une convention ou une autorisation de rejet est en principe exigée, à vérifier.");
+  if(s.q14===0) a.push("Vulnérabilité critique : un arrêt de production lié à la sécheresse a déjà eu lieu. Un plan de réponse par seuil de restriction est la priorité.");
+  if(s.q22===3 && s.q17<=1) a.push("Zone tendue et peu de leviers identifiés : à regarder avant l'été (éviter, réduire, puis réutiliser).");
   if(s.q18===0 && ind) a.push("Vous ne pilotez pas le coût complet de l'eau — angle mort économique direct.");
-  if(s.q10<=1 && s.q22>=2) a.push("Bassin sous tension et aucune procédure sécheresse formalisée — vous subirez la prochaine restriction.");
+  if(s.q10<=1 && s.q22>=2) a.push("Bassin sous tension et aucune procédure sécheresse écrite : la prochaine restriction vous prendra de court.");
   return a.slice(0,3);
 }
 
 // ---------- Chiffrage coût réel ----------
 function costEstimate(){
-  let facture=parseFloat(document.getElementById("factureAEP").value)||0;
+  const facture=parseFloat(document.getElementById("factureAEP").value)||0;
   const volume=parseFloat(document.getElementById("volume").value)||0;
   const prod=parseFloat(document.getElementById("prod").value)||0;
   const unit=(document.getElementById("prodUnit").value||"unité").trim();
-  const PRIX_AEP=2; // €/m³ (repère SISPEA)
-  if(!facture && volume) facture=volume*PRIX_AEP;
-  if(!facture) return null;
-  const completBas=facture*2, completCentral=facture*3, completHaut=facture*4;
-  const gainBas=Math.round(completCentral*0.15), gainHaut=Math.round(completCentral*0.25);
-  let coutM3prod=null;
-  if(prod>0) coutM3prod=completCentral/prod;
-  return {facture,completCentral,completBas,completHaut,gainBas,gainHaut,coutM3prod,unit};
+  if(!facture && !volume) return null;
+  return {facture,volume,unit,
+    prixFacture:(facture&&volume)? facture/volume : null,
+    eauParUnite:(volume&&prod)? volume/prod : null};
 }
 
 const euro=n=>new Intl.NumberFormat("fr-FR",{maximumFractionDigits:0}).format(Math.round(n))+" €";
@@ -419,29 +415,31 @@ function showResults(){
   // alertes
   const al=redAlerts(); const ac=document.getElementById("alerts");
   ac.innerHTML = al.length? al.map(t=>`<div class="alert"><span class="dot">●</span><span>${t}</span></div>`).join("")
-    : `<div class="mini"><div class="sub">Aucune alerte rouge majeure détectée sur ce mini-scan. Le diagnostic complet vérifie 10 règles supplémentaires (BNPE, VigiEau, ICPE…).</div></div>`;
+    : `<div class="mini"><div class="sub">Aucune alerte majeure sur ce questionnaire. Le diagnostic vérifie votre situation avec vos documents et les données publiques de votre site.</div></div>`;
 
   // chiffrage
   const cost=costEstimate(); const cc=document.getElementById("costCards"); const cn=document.getElementById("costNote");
   if(cost){
-    let cards=`
-      <div class="mini"><div class="k">Coût complet estimé / an</div><div class="v">${euro(cost.completCentral)}</div><div class="sub">fourchette ${euro(cost.completBas)} – ${euro(cost.completHaut)}</div></div>
-      <div class="mini"><div class="k">Manque-à-gagner d'un plan d'économies</div><div class="v">${euro(cost.gainBas)}–${euro(cost.gainHaut)}</div><div class="sub">par an (15-25 % du coût complet)</div></div>`;
-    if(cost.coutM3prod!==null) cards+=`<div class="mini"><div class="k">Coût eau / ${cost.unit} produite</div><div class="v">${new Intl.NumberFormat("fr-FR",{maximumFractionDigits:2}).format(cost.coutM3prod)} €</div><div class="sub">base coût complet estimé</div></div>`;
+    const nf=d=>new Intl.NumberFormat("fr-FR",{maximumFractionDigits:d});
+    let cards="";
+    if(cost.prixFacture!==null) cards+=`<div class="mini"><div class="k">Prix payé par m³, d'après votre facture</div><div class="v">${nf(2).format(cost.prixFacture)} €/m³</div><div class="sub">facture ÷ volume</div></div>`;
+    else if(cost.facture) cards+=`<div class="mini"><div class="k">Facture d'eau annuelle</div><div class="v">${euro(cost.facture)}</div><div class="sub">indiquez aussi le volume pour obtenir le prix au m³</div></div>`;
+    if(cost.eauParUnite!==null) cards+=`<div class="mini"><div class="k">Eau par unité produite (${cost.unit})</div><div class="v">${nf(2).format(cost.eauParUnite)} m³</div><div class="sub">volume ÷ production</div></div>`;
+    if(!cards) cards=`<div class="mini"><div class="sub">Indiquez votre facture et votre volume annuel pour voir le prix réellement payé par m³.</div></div>`;
     cc.innerHTML=cards;
-    cn.textContent="Estimation à partir de votre facture AEP, extrapolée au coût complet (facteur 2-4× : pompage, chauffage, traitement, rejets, redevances). Le diagnostic complet remplace cette extrapolation par votre coût réel mesuré.";
+    cn.textContent="La facture ne montre qu'une partie du coût de l'eau : l'énergie pour la pomper et la chauffer, les traitements, la maintenance et la production perdue en cas de restriction n'y figurent pas. Le diagnostic calcule votre coût complet avec vos chiffres.";
   } else {
-    cc.innerHTML=`<div class="mini"><div class="sub">Renseignez votre facture d'eau ou votre volume annuel (module bonus) pour obtenir l'estimation chiffrée de votre coût réel.</div></div>`;
+    cc.innerHTML=`<div class="mini"><div class="sub">Renseignez votre facture d'eau et votre volume annuel (module bonus) pour voir le prix réellement payé par m³.</div></div>`;
     cn.textContent="";
   }
 
   // quick wins adaptatifs simples
   const qw=[]; const s=state;
-  if(s.q4<=1) qw.push("Poser un comptage mensuel de la consommation totale — la base de tout pilotage, faisable en quelques jours.");
+  if(s.q4<=1) qw.push("Relever chaque mois le prélèvement total du site (réseau et forage) : la base de tout pilotage, faisable en quelques jours.");
   if(s.q7<=1) qw.push("Distinguer eau réseau (AEP) et captage propre, et sous-compter la source dominante — c'est la zone d'ombre n°1.");
   if(s.q10<=1) qw.push("Rédiger une procédure sécheresse simple (vigilance → alerte → crise) avant le prochain arrêté préfectoral.");
-  if(s.q18<=1) qw.push("Reconstituer le coût complet du m³ (au-delà de la facture AEP) pour révéler le vrai enjeu économique.");
-  if(s.q17<=1) qw.push("Identifier 1 boucle de réutilisation simple (eaux de rinçage, refroidissement) à tester en pilote.");
+  if(s.q18<=1) qw.push("Reconstituer le coût complet du m³ (énergie, traitements, maintenance, au-delà de la facture) pour révéler le vrai enjeu économique.");
+  if(s.q17<=1) qw.push("Repérer l'eau perdue (fuites, refroidissements à eau perdue) : c'est le premier levier, avant toute réutilisation.");
   while(qw.length<3) qw.push("Cartographier les usages eau par poste (process / sanitaire / refroidissement / lavage).");
   document.getElementById("quickwins").innerHTML=qw.slice(0,3).map(t=>`<li>${t}</li>`).join("");
 
@@ -450,8 +448,7 @@ function showResults(){
   const sel=document.getElementById("secteur"),tai=document.getElementById("taille");
   p.set("secteur",sel.options[sel.selectedIndex].text); if(tai.value) p.set("taille",tai.options[tai.selectedIndex].text);
   if(document.getElementById("commune").value) p.set("commune",document.getElementById("commune").value);
-  document.getElementById("fullLink").href="https://tally.so/r/ODWbW8?"+p.toString();
-  document.getElementById("form-section").classList.add("hidden");
+    document.getElementById("form-section").classList.add("hidden");
   document.getElementById("results").style.display="block";
   window.scrollTo({top:0,behavior:"smooth"});
 }
